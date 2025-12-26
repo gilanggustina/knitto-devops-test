@@ -47,6 +47,9 @@ app.get("/api/info", async (_: Request, res: Response) => {
   });
 });
 
-app.listen(process.env.PORT || 3000, () => {
-  console.log(`Backend running on port ${process.env.PORT || 3000}`);
+
+const PORT = Number(process.env.PORT) || 3000;
+const HOST = "0.0.0.0";
+app.listen(PORT, HOST, () => {
+  console.log(`Backend running on port ${PORT}`);
 });
