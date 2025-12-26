@@ -7,7 +7,7 @@ const error = ref<string | null>(null)
 
 const fetchInfo = async () => {
   try {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/info`)
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/info`)
 
     if (!res.ok) {
       throw new Error(`HTTP error ${res.status}`)
