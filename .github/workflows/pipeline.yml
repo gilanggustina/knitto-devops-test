@@ -18,18 +18,18 @@ jobs:
 
     - name: Build & Push FE
       run: |
-        docker build --no-cache --build-arg VITE_API_URL=/api -t ${{ secrets.DOCKER_USER }}/frontend ./fe
-        docker push ${{ secrets.DOCKER_USER }}/frontend:latest
+        docker build --no-cache --build-arg VITE_API_URL=/api -t ${{ secrets.DOCKER_USER }}/devops-test-frontend ./fe
+        docker push ${{ secrets.DOCKER_USER }}/devops-test-frontend:latest
 
     - name: Build & Push BE
       run: |
-        docker build --no-cache -t ${{ secrets.DOCKER_USER }}/backend ./be
-        docker push ${{ secrets.DOCKER_USER }}/backend:latest
+        docker build --no-cache -t ${{ secrets.DOCKER_USER }}/devops-test-backend ./be
+        docker push ${{ secrets.DOCKER_USER }}/devops-test-backend:latest
 
     - name: Build & Push DB
       run: |
-        docker build --no-cache -t ${{ secrets.DOCKER_USER }}/db ./db
-        docker push ${{ secrets.DOCKER_USER }}/db:latest
+        docker build --no-cache -t ${{ secrets.DOCKER_USER }}/devops-test-db ./db
+        docker push ${{ secrets.DOCKER_USER }}/devops-test-db:latest
 
   deploy:
     runs-on: ubuntu-latest

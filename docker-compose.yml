@@ -1,8 +1,6 @@
-version: "3.9"
-
 services:
   db:
-    image: gilanggustina/db:latest
+    image: gilanggustina/devops-test-db:latest
     container_name: db
     environment:
       POSTGRES_DB: appdb
@@ -14,7 +12,7 @@ services:
       retries: 5
 
   backend:
-    image: gilanggustina/backend:latest
+    image: gilanggustina/devops-test-backend:latest
     container_name: backend
     environment:
       DB_HOST: db
@@ -22,8 +20,6 @@ services:
       DB_PASSWORD: apppass
       DB_NAME: appdb
       CORS_ORIGIN: "*"
-    ports:
-      - "3000:3000"
     depends_on:
       db:
         condition: service_healthy
@@ -33,7 +29,7 @@ services:
       retries: 5
 
   frontend:
-    image: gilanggustina/frontend:latest
+    image: gilanggustina/devops-test-frontend:latest
     container_name: frontend
     depends_on:
       backend:
@@ -55,3 +51,65 @@ services:
         condition: service_healthy
       backend:
         condition: service_healthy
+  
+#   cadvisor:
+#     image: gcr.io/cadvisor/cadvisor:v0.47.2
+#     container_name: cadvisor
+#     privileged: true
+#     devices:
+#       - /dev/kmsg
+#     ports:
+#       - "8081:8080"
+#     volumes:
+#       - /:/rootfs:ro
+#       - /var/run:/var/run:ro
+#       - /sys:/sys:ro
+#       - /var/lib/docker/:/var/lib/docker:ro
+#     restart: unless-stopped
+  
+#   postgres-exporter:
+#     image: prometheuscommunity/postgres-exporter
+#     container_name: postgres-exporter
+#     environment:
+#       DATA_SOURCE_NAME: "postgresql://appuser:apppass@db:5432/appdb?sslmode=disable"
+#     ports:
+#       - "9187:9187"
+#     depends_on:
+#       db:
+#         condition: service_healthy
+
+#   node-exporter:
+#     image: prom/node-exporter
+#     container_name: node-exporter
+#     ports:
+#       - "9100:9100"
+#     restart: unless-stopped  
+
+#   prometheus:
+#     image: prom/prometheus
+#     container_name: prometheus
+#     ports:
+#       - "9090:9090"
+#     volumes:
+#       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+#       - prometheus-data:/prometheus
+#     depends_on:
+#       - cadvisor
+#       - postgres-exporter
+  
+#   grafana:
+#     image: grafana/grafana
+#     container_name: grafana
+#     ports:
+#       - "3001:3000"
+#     volumes:
+#       - grafana-data:/var/lib/grafana
+#     environment:
+#       GF_SECURITY_ADMIN_USER: admin
+#       GF_SECURITY_ADMIN_PASSWORD: admin
+#     depends_on:
+#       - prometheus
+
+# volumes:
+#   prometheus-data:
+#   grafana-data:

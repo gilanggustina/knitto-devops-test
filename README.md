@@ -53,7 +53,7 @@ Fokus utama proyek ini adalah:
 
 Fungsi utama:
 - Menyediakan API untuk FE dan akses service DB dengan endpoint `/api/info`
-- Health check `/health`
+- Health check `/api/health`
 - Mengaktifkan **CORS & security (helmet)**
 
 ### 2️⃣ Frontend (`fe/Dockerfile`)
