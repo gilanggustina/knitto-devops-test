@@ -152,7 +152,7 @@ docker compose up -d --build
 
 **Backend health check:**
 ```
-👉 http://localhost:3000/health
+👉 http://localhost:3000/api/health
 ```
 
 **API komunikasi FE ↔ BE:**
