@@ -1,4 +1,4 @@
-# DevOps Monorepo – Frontend, Backend, Database, CI/CD
+# DevOps Monorepo – Frontend, Backend, Database, CI/CD, And Monitoring
 
 Repository ini merupakan **monorepo** yang berisi **Frontend (Vue.js + TypeScript)**, **Backend (Express.js + TypeScript)**, dan **Database (PostgreSQL)** yang telah didockerisasi serta dilengkapi **pipeline CI/CD menggunakan GitHub Actions**.
 
