@@ -250,6 +250,7 @@ Proyek ini tidak fokus pada fitur bisnis, melainkan:
 - **CI/CD Automation**
 - **Deployment Strategy**
 - **Infrastructure Readiness**
+- **Health Check Service**
 - **Monitoring & Observability**
 
 Sesuai dengan spesifikasi **Technical Test – DevOps** (Docker, Docker Compose, CI/CD, Monitoring, Health Check).
