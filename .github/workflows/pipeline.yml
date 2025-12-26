@@ -18,17 +18,17 @@ jobs:
 
     - name: Build & Push FE
       run: |
-        docker build -t ${{ secrets.DOCKER_USER }}/frontend ./fe
+        docker build --no-cache --build-arg VITE_API_URL=/api -t ${{ secrets.DOCKER_USER }}/frontend ./fe
         docker push ${{ secrets.DOCKER_USER }}/frontend
 
     - name: Build & Push BE
       run: |
-        docker build -t ${{ secrets.DOCKER_USER }}/backend ./be
+        docker build --no-cache -t ${{ secrets.DOCKER_USER }}/backend ./be
         docker push ${{ secrets.DOCKER_USER }}/backend
 
     - name: Build & Push DB
       run: |
-        docker build -t ${{ secrets.DOCKER_USER }}/db ./db
+        docker build --no-cache -t ${{ secrets.DOCKER_USER }}/db ./db
         docker push ${{ secrets.DOCKER_USER }}/db
 
   deploy:

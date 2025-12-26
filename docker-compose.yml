@@ -35,8 +35,6 @@ services:
   frontend:
     image: gilanggustina/fe:latest
     container_name: frontend
-    environment:
-      VITE_API_URL: "/api"
     depends_on:
       backend:
         condition: service_healthy
@@ -57,7 +55,3 @@ services:
         condition: service_healthy
       backend:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost/health || exit 1"]
-      interval: 10s
-      retries: 5
