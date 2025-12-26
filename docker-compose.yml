@@ -23,7 +23,7 @@ services:
       DB_NAME: appdb
       CORS_ORIGIN: "*"
     ports:
-      - "3000:80"
+      - "3000:3000"
     depends_on:
       db:
         condition: service_healthy
