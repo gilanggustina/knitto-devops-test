@@ -1,0 +1,44 @@
+name: CI-CD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASS }}
+
+    - name: Build & Push FE
+      run: |
+        docker build -t ${{ secrets.DOCKER_USER }}/frontend ./fe
+        docker push ${{ secrets.DOCKER_USER }}/frontend
+
+    - name: Build & Push BE
+      run: |
+        docker build -t ${{ secrets.DOCKER_USER }}/backend ./be
+        docker push ${{ secrets.DOCKER_USER }}/backend
+
+    - name: Build & Push DB
+      run: |
+        docker build -t ${{ secrets.DOCKER_USER }}/db ./db
+        docker push ${{ secrets.DOCKER_USER }}/db
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-push
+
+    steps:
+    - name: Deploy to VM
+      run: |
+        ssh user@VM_IP << 'EOF'
+        docker compose pull
+        docker compose up -d
+        EOF

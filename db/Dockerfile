@@ -1,0 +1,7 @@
+FROM postgres:15
+
+ENV POSTGRES_DB=appdb
+ENV POSTGRES_USER=appuser
+ENV POSTGRES_PASSWORD=apppass
+
+COPY init.sql /docker-entrypoint-initdb.d/
