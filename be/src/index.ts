@@ -2,6 +2,8 @@ import express, { Request, Response } from "express";
 import helmet from "helmet";
 import cors from "cors";
 import { Pool } from "pg";
+import dotenv from "dotenv";
+dotenv.config();
 
 /* ===== Security ===== */
 const app = express();
@@ -17,10 +19,14 @@ app.use(express.json());
 /* ===== DB ===== */
 const pool = new Pool({
   host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT || 5432),
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  port: 5432,
+  ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : false,
+  max: 10, // max connection
+  idleTimeoutMillis: 30_000,
+  connectionTimeoutMillis: 2_000,
 });
 
 /** Healthcheck untuk Docker */
