@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   db:
-    image: yourdockerhub/db:latest
+    image: gilanggustina/db:latest
     container_name: db
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U appuser"]
@@ -10,7 +10,7 @@ services:
       retries: 5
 
   backend:
-    image: yourdockerhub/backend:latest
+    image: gilanggustina/backend:latest
     container_name: backend
     environment:
       DB_HOST: db
@@ -27,7 +27,7 @@ services:
       retries: 5
 
   frontend:
-    image: yourdockerhub/frontend:latest
+    image: gilanggustina/frontend:latest
     container_name: frontend
     environment:
       VITE_API_URL: "http://backend:3000"
