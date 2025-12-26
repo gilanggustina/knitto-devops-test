@@ -6,7 +6,9 @@ Fokus utama proyek ini adalah:
 - Docker & Docker Compose
 - CI/CD Pipeline
 - Deployment readiness (VM via SSH)
+- Health Check pada Container (Frontend, Backend, dan Database)
 - Komunikasi Frontend ↔ Backend
+- Monitoring dengan Grafana & Prometheus
 
 ---
 
@@ -14,62 +16,63 @@ Fokus utama proyek ini adalah:
 
 ```
 /
-├── fe/                      # Frontend (Vue 3 + TypeScript)
+├── fe/                           # Frontend (Vue 3 + TypeScript)
 │   ├── Dockerfile
 │   ├── package.json
 │   ├── tsconfig.json
 │   ├── vite.config.ts
 │   ├── .env.example
 │   └── src/
-│       ├── main.js
+│       ├── main.ts
 │       └── App.vue
 │
-├── be/                      # Backend (Express.js + TypeScript)
+├── be/                           # Backend (Express.js + TypeScript)
 │   ├── Dockerfile
 │   ├── package.json
 │   ├── tsconfig.json
 │   └── src/
 │       └── index.ts
 │
-├── db/                      # Database (PostgreSQL)
+├── db/                           # Database (PostgreSQL)
 │   ├── Dockerfile
 │   └── init.sql
 │
-├── monitoring/                      # Monitoring With Grafana & Promotheus
-│   ├── grafana
-│       └── data
-│   ├── promotheus
-│       └── prometheus.yml
-│   ├── docker.compose.yml
+├── monitoring/                   # Monitoring dengan Grafana & Prometheus
+│   ├── grafana/
+│   │   └── data/
+│   ├── prometheus/
+│   │   └── prometheus.yml
+│   └── docker-compose.yml
 │
-├── nginx/                      # Nginx Reverse Proxy
-│   ├── nginx.conf
+├── nginx/                        # Conf Nginx Reverse Proxy
+│   └── nginx.conf
 │
-├── docker-compose.yml       # Orkestrasi container
+├── docker-compose.yml            # Orkestrasi container
 ├── .gitignore
+├── README.md
 └── .github/
   └── workflows/
-    └── pipeline.yml     # GitHub Actions CI/CD
+    └── pipeline.yml          # GitHub Actions CI/CD
 ```
 
 ---
 
-## 🐳 Dockerfile Penjelasan
+## 🐳 Penjelasan Dockerfile
 
 ### 1️⃣ Backend (`be/Dockerfile`)
-- Menggunakan **Node.js Alpine**
+- Menggunakan **Node.js Alpine** untuk image yang ringan
 - Build TypeScript → JavaScript
 - Menjalankan Express di port `3000`
 
-Fungsi utama:
+**Fungsi utama:**
 - Menyediakan API untuk FE dan akses service DB dengan endpoint `/api/info`
 - Health check `/api/health`
 - Mengaktifkan **CORS & security (helmet)**
 
 ### 2️⃣ Frontend (`fe/Dockerfile`)
 - Build Vue menggunakan **Vite**
-- Menggunakan **multi-stage build**
-- Image final menggunakan **Nginx**
+- Menggunakan **multi-stage build** untuk optimasi ukuran image
+- Image final menggunakan **Nginx** untuk serving static files
 
 Frontend akan mengakses backend melalui:
 ```env
@@ -90,12 +93,12 @@ Docker Compose digunakan untuk:
 - Mengatur dependency & health check
 - Memastikan komunikasi antar service
 
-Service yang tersedia:
-- `db` → PostgreSQL
-- `backend` → Express API
+**Service yang tersedia:**
+- `db` → PostgreSQL (port `5432`)
+- `backend` → Express API (port `3000`)
 - `frontend` → Vue App (port `80`)
 
-Komunikasi internal menggunakan **service name Docker**:
+**Komunikasi internal menggunakan service name Docker:**
 - FE → `http://backend:3000/api`
 - BE → `db:5432`
 
@@ -118,14 +121,14 @@ Pipeline berada di:
 4. **Push image ke Docker Registry**
 5. **Deploy ke VM via SSH (docker-compose)**
 
-> ⚠️ Jika VM belum tersedia, step deploy dapat di-comment namun pipeline tetap valid.
+> ⚠️ **Catatan:** Jika VM belum tersedia, step deploy dapat di-comment namun pipeline tetap valid.
 
 ---
 
 ## 🚀 Cara Menjalankan Aplikasi (LOCAL)
 
 ### 1️⃣ Prasyarat
-- Docker Desktop (Windows)
+- Docker Desktop (Windows/Mac/Linux)
 - Git
 - Port `80` & `3000` tidak bentrok
 
@@ -143,13 +146,24 @@ docker compose up -d --build
 ### 4️⃣ Akses Aplikasi
 
 **Frontend:**
+```
 👉 http://localhost
+```
 
 **Backend health check:**
+```
 👉 http://localhost:3000/health
+```
 
 **API komunikasi FE ↔ BE:**
+```
 👉 http://localhost:3000/api/info
+```
+
+### 5️⃣ Stop Aplikasi
+```bash
+docker compose down
+```
 
 ---
 
@@ -179,14 +193,18 @@ import.meta.env.VITE_API_URL
 ## 🚀 Deployment via CI/CD
 
 ### Secrets GitHub yang Dibutuhkan:
+
+**Docker Hub:**
 - `DOCKER_USER`
 - `DOCKER_PASS`
 
+**VM 1 (Primary):**
 - `SSH_VM1_HOST`
 - `SSH_VM1_PORT`
 - `SSH_VM1_USER`
 - `SSH_VM1_PRIVATE_KEY`
 
+**VM 2 (Secondary):**
 - `SSH_VM2_HOST`
 - `SSH_VM2_PORT`
 - `SSH_VM2_USER`
@@ -196,28 +214,70 @@ import.meta.env.VITE_API_URL
 1. Build & push image ke Docker Hub
 2. Pull image di VM
 3. Menjalankan `docker compose up -d`
+4. Melakukan health check
+
+---
+
+## 📊 Monitoring
+
+Monitoring menggunakan **Grafana** dan **Prometheus** untuk memantau:
+- Resource usage (CPU, Memory, Disk)
+- Container health status
+- Application metrics
+- System performance
+
+Akses monitoring dashboard setelah menjalankan `docker-compose.yml` di folder `monitoring/`.
 
 ---
 
 ## ✅ Fitur Tambahan (Nilai Plus)
 
-- Health check FE / BE / DB
-- Environment variable FE (`VITE_API_URL`)
-- CORS & security (helmet)
-- Docker multi-stage build
-- Monorepo clean structure
-- CI/CD production-ready
-- Monitoring With Grafana and Promotheus
+- ✅ Health check FE / BE / DB
+- ✅ Environment variable FE (`VITE_API_URL`)
+- ✅ CORS & security (helmet)
+- ✅ Docker multi-stage build
+- ✅ Monorepo clean structure
+- ✅ CI/CD production-ready
+- ✅ Monitoring dengan Grafana dan Prometheus
+- ✅ Nginx reverse proxy
 
 ---
 
 ## 📌 Catatan
 
 Proyek ini tidak fokus pada fitur bisnis, melainkan:
-- Docker
-- CI/CD
-- Deployment
-- Infrastructure readiness
-- Monitoring
+- **Docker & Containerization**
+- **CI/CD Automation**
+- **Deployment Strategy**
+- **Infrastructure Readiness**
+- **Monitoring & Observability**
 
-Sesuai dengan spesifikasi Technical Test – DevOps (Docker, Docker Compose, CI/CD, Monitoring, Health Check).
+Sesuai dengan spesifikasi **Technical Test – DevOps** (Docker, Docker Compose, CI/CD, Monitoring, Health Check).
+
+---
+
+## 👥 Contributors
+
+<table>
+  <tr>
+  <td align="center">
+    <a href="https://github.com/gilanggustina">
+    <img src="https://github.com/gilanggustina.png" width="100px;" alt="Cahaya Gilang Gustina"/>
+    <br />
+    <sub><b>Cahaya Gilang Gustina</b></sub>
+    </a>
+    <br />
+    <sub>DevOps Engineer</sub>
+  </td>
+  </tr>
+</table>
+
+---
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+---
+
+**Happy Coding! 🚀**
