@@ -30,7 +30,7 @@ const pool = new Pool({
 });
 
 /** Healthcheck untuk Docker */
-app.get("/health", (_: Request, res: Response) => {
+app.get("/api/health", (_: Request, res: Response) => {
   res.json({ status: "ok" });
 });
 

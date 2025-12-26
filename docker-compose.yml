@@ -23,12 +23,12 @@ services:
       DB_NAME: appdb
       CORS_ORIGIN: "*"
     ports:
-      - "3000:3000"
+      - "3000:80"
     depends_on:
       db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
       interval: 10s
       retries: 5
 
@@ -42,7 +42,7 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost"]
       interval: 10s
       retries: 5
-  
+
   nginx:
     image: nginx:alpine
     container_name: nginx
