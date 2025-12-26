@@ -9,44 +9,75 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USER }}
-        password: ${{ secrets.DOCKER_PASS }}
+      - name: Login Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
 
-    - name: Build & Push FE
-      run: |
-        docker build --no-cache --build-arg VITE_API_URL=/api -t ${{ secrets.DOCKER_USER }}/devops-test-frontend ./fe
-        docker push ${{ secrets.DOCKER_USER }}/devops-test-frontend:latest
+      - name: Build & Push FE
+        run: |
+          docker build --no-cache \
+            --build-arg VITE_API_URL=/api \
+            -t ${{ secrets.DOCKER_USER }}/devops-test-frontend:latest ./fe
+          docker push ${{ secrets.DOCKER_USER }}/devops-test-frontend:latest
 
-    - name: Build & Push BE
-      run: |
-        docker build --no-cache -t ${{ secrets.DOCKER_USER }}/devops-test-backend ./be
-        docker push ${{ secrets.DOCKER_USER }}/devops-test-backend:latest
+      - name: Build & Push BE
+        run: |
+          docker build --no-cache \
+            -t ${{ secrets.DOCKER_USER }}/devops-test-backend:latest ./be
+          docker push ${{ secrets.DOCKER_USER }}/devops-test-backend:latest
 
-    - name: Build & Push DB
-      run: |
-        docker build --no-cache -t ${{ secrets.DOCKER_USER }}/devops-test-db ./db
-        docker push ${{ secrets.DOCKER_USER }}/devops-test-db:latest
+      - name: Build & Push DB
+        run: |
+          docker build --no-cache \
+            -t ${{ secrets.DOCKER_USER }}/devops-test-db:latest ./db
+          docker push ${{ secrets.DOCKER_USER }}/devops-test-db:latest
 
   deploy:
     runs-on: ubuntu-latest
     needs: build-push
 
     steps:
-    - name: Setup SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+      # ======================
+      # Deploy ke VM-1
+      # ======================
+      - name: Setup SSH VM-1
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_VM1_PRIVATE_KEY }}" > ~/.ssh/id_vm1
+          chmod 600 ~/.ssh/id_vm1
+          ssh-keyscan -p ${{ secrets.SSH_VM1_PORT }} \
+            ${{ secrets.SSH_VM1_HOST }} >> ~/.ssh/known_hosts
 
-    - name: Deploy to VM
-      run: |
-        ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-        cd /opt/devops-test
-        docker compose pull
-        docker compose up -d
-        EOF
+      - name: Deploy to VM-1
+        run: |
+          ssh -i ~/.ssh/id_vm1 \
+            -p ${{ secrets.SSH_VM1_PORT }} \
+            ${{ secrets.SSH_VM1_USER }}@${{ secrets.SSH_VM1_HOST }} << 'EOF'
+          cd /opt/devops-test
+          docker compose pull
+          docker compose up -d
+          EOF
+
+      # ======================
+      # Deploy ke VM-2
+      # ======================
+      # - name: Setup SSH VM-2
+      #   run: |
+      #     echo "${{ secrets.SSH_VM2_PRIVATE_KEY }}" > ~/.ssh/id_vm2
+      #     chmod 600 ~/.ssh/id_vm2
+      #     ssh-keyscan -p ${{ secrets.SSH_VM2_PORT }} \
+      #       ${{ secrets.SSH_VM2_HOST }} >> ~/.ssh/known_hosts
+
+      # - name: Deploy to VM-2
+      #   run: |
+      #     ssh -i ~/.ssh/id_vm2 \
+      #       -p ${{ secrets.SSH_VM2_PORT }} \
+      #       ${{ secrets.SSH_VM2_USER }}@${{ secrets.SSH_VM2_HOST }} << 'EOF'
+      #     cd /opt/devops-test
+      #     docker compose pull
+      #     docker compose up -d
+      #     EOF
