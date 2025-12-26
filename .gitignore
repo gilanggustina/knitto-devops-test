@@ -30,3 +30,6 @@ coverage/
 
 # ================= Misc =================
 *.swp
+
+# ================= Monitoring =================
+monitoring/grafana/data/*
