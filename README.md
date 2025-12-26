@@ -35,6 +35,16 @@ Fokus utama proyek ini adalah:
 │   ├── Dockerfile
 │   └── init.sql
 │
+├── monitoring/                      # Monitoring With Grafana & Promotheus
+│   ├── grafana
+│       └── data
+│   ├── promotheus
+│       └── prometheus.yml
+│   ├── docker.compose.yml
+│
+├── nginx/                      # Nginx Reverse Proxy
+│   ├── nginx.conf
+│
 ├── docker-compose.yml       # Orkestrasi container
 ├── .gitignore
 └── .github/
@@ -63,7 +73,7 @@ Fungsi utama:
 
 Frontend akan mengakses backend melalui:
 ```env
-VITE_API_URL=http://backend:3000
+VITE_API_URL=http://backend:3000/api
 ```
 
 ### 3️⃣ Database (`db/Dockerfile`)
@@ -86,7 +96,7 @@ Service yang tersedia:
 - `frontend` → Vue App (port `80`)
 
 Komunikasi internal menggunakan **service name Docker**:
-- FE → `http://backend:3000`
+- FE → `http://backend:3000/api`
 - BE → `db:5432`
 
 ---
@@ -121,8 +131,8 @@ Pipeline berada di:
 
 ### 2️⃣ Clone Repository
 ```bash
-git clone https://github.com/username/devops-monorepo.git
-cd devops-monorepo
+git clone https://github.com/gilanggustina/knitto-devops-test.git
+cd knitto-devops-test
 ```
 
 ### 3️⃣ Jalankan Docker Compose
@@ -139,7 +149,7 @@ docker compose up -d --build
 👉 http://localhost:3000/health
 
 **API komunikasi FE ↔ BE:**
-👉 http://localhost:3000/api/message
+👉 http://localhost:3000/api/info
 
 ---
 
@@ -147,13 +157,15 @@ docker compose up -d --build
 
 ### Endpoint Backend
 ```
-GET /api/message
+GET /api/info
 ```
 
 ### Response:
 ```json
 {
-  "message": "Hello from Backend"
+  "service": "backend",
+  "message": "Backend berhasil diakses dari Frontend",
+  "user": "DevOps User"
 }
 ```
 
@@ -169,9 +181,16 @@ import.meta.env.VITE_API_URL
 ### Secrets GitHub yang Dibutuhkan:
 - `DOCKER_USER`
 - `DOCKER_PASS`
-- `VM_IP`
-- `VM_USER`
-- `SSH_PRIVATE_KEY`
+
+- `SSH_VM1_HOST`
+- `SSH_VM1_PORT`
+- `SSH_VM1_USER`
+- `SSH_VM1_PRIVATE_KEY`
+
+- `SSH_VM2_HOST`
+- `SSH_VM2_PORT`
+- `SSH_VM2_USER`
+- `SSH_VM2_PRIVATE_KEY`
 
 ### Pipeline akan:
 1. Build & push image ke Docker Hub
@@ -188,6 +207,7 @@ import.meta.env.VITE_API_URL
 - Docker multi-stage build
 - Monorepo clean structure
 - CI/CD production-ready
+- Monitoring With Grafana and Promotheus
 
 ---
 
@@ -198,5 +218,6 @@ Proyek ini tidak fokus pada fitur bisnis, melainkan:
 - CI/CD
 - Deployment
 - Infrastructure readiness
+- Monitoring
 
-Sesuai dengan spesifikasi Technical Test – DevOps (Docker, Docker Compose, CI/CD).
+Sesuai dengan spesifikasi Technical Test – DevOps (Docker, Docker Compose, CI/CD, Monitoring, Health Check).
