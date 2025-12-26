@@ -65,19 +65,19 @@ jobs:
       # ======================
       # Deploy ke VM-2
       # ======================
-      - name: Setup SSH VM-2
-        run: |
-          echo "${{ secrets.SSH_VM2_PRIVATE_KEY }}" > ~/.ssh/id_vm2
-          chmod 600 ~/.ssh/id_vm2
-          ssh-keyscan -p ${{ secrets.SSH_VM2_PORT }} \
-            ${{ secrets.SSH_VM2_HOST }} >> ~/.ssh/known_hosts
+      # - name: Setup SSH VM-2
+      #   run: |
+      #     echo "${{ secrets.SSH_VM2_PRIVATE_KEY }}" > ~/.ssh/id_vm2
+      #     chmod 600 ~/.ssh/id_vm2
+      #     ssh-keyscan -p ${{ secrets.SSH_VM2_PORT }} \
+      #       ${{ secrets.SSH_VM2_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy to VM-2
-        run: |
-          ssh -i ~/.ssh/id_vm2 \
-            -p ${{ secrets.SSH_VM2_PORT }} \
-            ${{ secrets.SSH_VM2_USER }}@${{ secrets.SSH_VM2_HOST }} << 'EOF'
-          cd /opt/devops-test
-          docker compose pull
-          docker compose up -d
-          EOF
+      # - name: Deploy to VM-2
+      #   run: |
+      #     ssh -i ~/.ssh/id_vm2 \
+      #       -p ${{ secrets.SSH_VM2_PORT }} \
+      #       ${{ secrets.SSH_VM2_USER }}@${{ secrets.SSH_VM2_HOST }} << 'EOF'
+      #     cd /opt/devops-test
+      #     docker compose pull
+      #     docker compose up -d
+      #     EOF
